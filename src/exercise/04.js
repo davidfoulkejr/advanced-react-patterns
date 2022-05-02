@@ -11,16 +11,30 @@ function useToggle() {
   // 🐨 Add a property called `togglerProps`. It should be an object that has
   // `aria-pressed` and `onClick` properties.
   // 💰 {'aria-pressed': on, onClick: toggle}
-  return {on, toggle}
+  const getTogglerProps = props => {
+    const onButtonClick = e => {
+      toggle()
+      props.onClick && props.onClick(e)
+    }
+
+    return {...props, onClick: onButtonClick, 'aria-pressed': on}
+  }
+  return {on, toggle, getTogglerProps}
 }
 
 function App() {
-  const {on, togglerProps} = useToggle()
+  const {on, getTogglerProps} = useToggle()
   return (
     <div>
-      <Switch on={on} {...togglerProps} />
+      <Switch {...getTogglerProps({on})} />
       <hr />
-      <button aria-label="custom-button" {...togglerProps}>
+      <button
+        {...getTogglerProps({
+          // id: 'custom-button-id',
+          'aria-label': 'custom-button',
+          onClick: () => console.info('onButtonClick'),
+        })}
+      >
         {on ? 'on' : 'off'}
       </button>
     </div>
